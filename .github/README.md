@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../logo/chronitondb-lockup-dark.svg">
-    <img alt="ChronitonDB" src="../logo/chronitondb-lockup-light.svg" width="358">
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/chronitonlabs/brand/raw/main/chronitondb/chronitondb-lockup-dark.svg">
+    <img alt="ChronitonDB" src="https://github.com/chronitonlabs/brand/raw/main/chronitondb/chronitondb-lockup-light.svg" width="358">
   </picture>
 </p>
 
