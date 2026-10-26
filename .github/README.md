@@ -1,7 +1,9 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../logo/chronitondb-lockup-dark.svg">
-  <img alt="ChronitonDB" src="../logo/chronitondb-lockup-light.svg" width="358">
-</picture>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../logo/chronitondb-lockup-dark.svg">
+    <img alt="ChronitonDB" src="../logo/chronitondb-lockup-light.svg" width="358">
+  </picture>
+</p>
 
 > [!WARNING]
 > **ChronitonDB is in early development and is being bootstrapped.** Nothing here is ready to use yet. Do not run it, build on it or depend on it. Expect branches, settings and history to change without notice.
