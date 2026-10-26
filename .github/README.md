@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="logo/chronitondb-lockup-dark.svg">
-  <img alt="ChronitonDB" src="logo/chronitondb-lockup-light.svg" width="358">
+  <source media="(prefers-color-scheme: dark)" srcset="../logo/chronitondb-lockup-dark.svg">
+  <img alt="ChronitonDB" src="../logo/chronitondb-lockup-light.svg" width="358">
 </picture>
 
 > [!WARNING]
@@ -35,9 +35,9 @@ Contribution guidelines and a contributor agreement are being set up. Pull reque
 
 ## License and notices
 
-ChronitonDB is licensed under the [Apache License, Version 2.0](LICENSE.txt).
+ChronitonDB is licensed under the [Apache License, Version 2.0](../LICENSE.txt).
 
-ChronitonDB is a modified version of Apache Cassandra. Apache Cassandra is Copyright 2009 and later The Apache Software Foundation and is licensed under the Apache License, Version 2.0. The notices that come with Apache Cassandra are kept in [NOTICE.txt](NOTICE.txt), and the original Apache Cassandra README is kept in [README.asc](README.asc).
+ChronitonDB is a modified version of Apache Cassandra. Apache Cassandra is Copyright 2009 and later The Apache Software Foundation and is licensed under the Apache License, Version 2.0. The notices that come with Apache Cassandra are kept in [NOTICE.txt](../NOTICE.txt), and the original Apache Cassandra README is kept in [README.asc](../README.asc).
 
 Changes made in ChronitonDB are Copyright 2026 AxonOps Limited and are licensed under the Apache License, Version 2.0.
 
