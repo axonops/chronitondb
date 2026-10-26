@@ -27,8 +27,6 @@ ChronitonDB is an open source database built on [Apache Cassandra](https://cassa
 | `chronitondb-5.0` (default) | Apache Cassandra 5.0 | in development |
 | `chronitondb-6.0` | Apache Cassandra 6.0 (not yet released by Apache) | in development |
 
-The other branches in this repository are unchanged copies of Apache Cassandra's branches.
-
 ## Moving from Apache Cassandra
 
 ChronitonDB is built on Apache Cassandra 5.0 and later. A cluster on an earlier version of Apache Cassandra must first be upgraded to Apache Cassandra 5.0, with the upgrade fully completed and the settings that upgrade requires in place, before it can move to ChronitonDB 5.0.
