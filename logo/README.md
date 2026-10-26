@@ -6,6 +6,7 @@
 | `chronitondb-lockup-dark.svg` | Icon and name, for dark backgrounds |
 | `chronitondb-icon-light.svg`, `chronitondb-icon-light-512.png` | Icon only, for light backgrounds |
 | `chronitondb-icon-dark.svg`, `chronitondb-icon-dark-512.png` | Icon only, for dark backgrounds |
+| `chronitondb-social-preview.png` | GitHub social preview, 1280 by 640, set in the repository settings |
 
 ## Font and colours
 
