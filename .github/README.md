@@ -12,7 +12,7 @@
 
 ChronitonDB is an open source database built on [Apache Cassandra](https://cassandra.apache.org/). It adds features and enhancements shaped by its users and contributors, with secure and well tuned defaults, while retaining backwards compatibility with Apache Cassandra.
 
-## How ChronitonDB is run
+## How the project is managed
 
 [AxonOps](https://axonops.com) is the steward of ChronitonDB. A project needs someone to own its name, hold its contributor agreements, make its releases and stand behind them. AxonOps takes that role. ChronitonDB itself is open source and stays open source.
 
