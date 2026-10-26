@@ -5,12 +5,10 @@
   </picture>
 </p>
 
+<h3 align="center">Powered by <a href="https://cassandra.apache.org/">Apache Cassandra</a>®</h3>
+
 > [!WARNING]
 > **ChronitonDB is in early development and is being bootstrapped.** Nothing here is ready to use yet. Do not run it, build on it or depend on it. Expect branches, settings and history to change without notice.
-
-# ChronitonDB
-
-**ChronitonDB, powered by [Apache Cassandra](https://cassandra.apache.org/)®**
 
 ChronitonDB is an open source database built on [Apache Cassandra](https://cassandra.apache.org/). It adds features and enhancements shaped by its users and contributors, with secure and well tuned defaults, while retaining backwards compatibility with Apache Cassandra.
 
