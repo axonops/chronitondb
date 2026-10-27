@@ -10,14 +10,14 @@
 > [!WARNING]
 > **ChronitonDB is in early development and is being bootstrapped.** Nothing here is ready to use yet. Do not run it, build on it or depend on it. Expect branches, settings and history to change without notice.
 
-ChronitonDB is an open source database built on [Apache Cassandra](https://cassandra.apache.org/). It adds features and enhancements shaped by its users and contributors, with secure and well tuned defaults, while retaining backwards compatibility with Apache Cassandra.
+ChronitonDB is an open source database built on [Apache Cassandra](https://cassandra.apache.org/). It adds features and fixes, and aims to stay compatible with Apache Cassandra. Find out more at [chronitonlabs.org](https://chronitonlabs.org/projects/chronitondb/).
 
 ## How the project is managed
 
 [AxonOps](https://axonops.com) is the steward of ChronitonDB. A project needs someone to own its name, hold its contributor agreements, make its releases and stand behind them. AxonOps takes that role. ChronitonDB itself is open source and stays open source.
 
 - **Apache License 2.0, always.** ChronitonDB is released under the Apache License 2.0 and will stay under it. There will be no license change and no proprietary edition with features held back.
-- **Apache Cassandra comes first.** We offer our fixes and features to the Apache Cassandra project. ChronitonDB ships them first, and we work to get them accepted in Apache Cassandra.
+- **Apache Cassandra comes first.** We aim to offer our fixes and features to the Apache Cassandra project and work to get them accepted there. Work we bring in from Apache Cassandra keeps its original authors.
 - **A way back to Apache Cassandra.** We aim to keep a supported path from ChronitonDB back to Apache Cassandra, and we document any feature that makes going back harder.
 
 ## Branches
@@ -33,7 +33,7 @@ ChronitonDB is built on Apache Cassandra 5.0 and later. A cluster on an earlier 
 
 ## Contributing
 
-Contributions are made under the Chroniton Labs contributor agreements. Before your first pull request is merged, you sign the agreement through the CLA Assistant check on that pull request. The agreements, a plain English summary and how to sign are at https://github.com/chronitonlabs/contributor-agreements. Contribution guidelines are being written.
+Contributions are made under the Chroniton Labs contributor agreements. Before your first pull request is merged, you sign the agreement through the CLA Assistant check on that pull request. The agreements, a plain English summary and how to sign are at https://github.com/chronitonlabs/contributor-agreements. Contribution guidelines are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License and notices
 
