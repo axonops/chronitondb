@@ -33,7 +33,7 @@ ChronitonDB is built on Apache Cassandra 5.0 and later. A cluster on an earlier 
 
 ## Contributing
 
-Contribution guidelines and a contributor agreement are being set up. Pull requests cannot be accepted until they are in place.
+Contributions are made under the Chroniton Labs contributor agreements. Before your first pull request is merged, you sign the agreement through the CLA Assistant check on that pull request. The agreements, a plain English summary and how to sign are at https://github.com/chronitonlabs/contributor-agreements. Contribution guidelines are being written.
 
 ## License and notices
 
