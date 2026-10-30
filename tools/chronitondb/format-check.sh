@@ -32,7 +32,7 @@
 # Tool: the google-java-format all-deps jar pinned below, downloaded into
 # build/chronitondb-shape on first use and checked against its sha256.
 # Nothing is added to lib/ or build.xml and nothing is shipped. It needs a
-# JDK (not a JRE) because it parses with jdk.compiler.
+# Java 21 JDK (not a JRE) because it parses with jdk.compiler.
 #
 # Output: one line per file that needs formatting
 #   ERROR path GoogleJavaFormat: not in Google Java Style, run tools/chronitondb/format-check.sh --fix path
@@ -44,17 +44,21 @@ tool=format-check
 # shellcheck source=lib.sh
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-# The pin. 1.35.0 is the last google-java-format that runs on Java 17, the
-# JDK of the 5.0 line (decision J1): 1.36.0 raised the floor to Java 21, so
-# the 6.0 line can move to the current release. The sha256 is the digest
-# GitHub publishes for the release asset, equal to the .sha256 file Maven
-# Central serves for the same artefact (both read on 2026-10-30).
-gjf_version="1.35.0"
-gjf_url="https://github.com/google/google-java-format/releases/download/v1.35.0/google-java-format-1.35.0-all-deps.jar"
-gjf_sha256="bfb7f9ead6cd328389bc2da53860443bc0e805dfd08cc889bfdf43b26cb2a6e8"
+# The pin, the same release on both lines so a change carried from 5.0 to 6.0
+# keeps its formatting. google-java-format 1.29.0 and later need a Java 21 JDK
+# to run, and still format code for any earlier Java level. The 5.0 line
+# builds on Java 17, so the formatter runs on its own JDK: SHAPE_GJF_JAVA_HOME,
+# or JAVA_HOME when that is already 21. The sha256 is the digest GitHub
+# publishes for the release asset, equal to the .sha256 file Maven Central
+# serves for the same artefact (both read on 2026-10-30).
+gjf_version="1.37.0"
+gjf_url="https://github.com/google/google-java-format/releases/download/v1.37.0/google-java-format-1.37.0-all-deps.jar"
+gjf_sha256="834b2a0c38cb774953322a84b5ca3f2f40dd3156650b3cd44d3b744345962f7a"
+gjf_java_bin="${SHAPE_GJF_JAVA_HOME:+$SHAPE_GJF_JAVA_HOME/bin/java}"
+gjf_java_bin="${gjf_java_bin:-$java_bin}"
 
 # google-java-format reads javac internals, these exports let it on every
-# JDK from 17 on. SHAPE_GJF_JAR points at a jar already on disk instead.
+# JDK from 21 on. SHAPE_GJF_JAR points at a jar already on disk instead.
 gjf_java_opts="--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
 --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED
 --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
@@ -79,12 +83,18 @@ gjf_jar()
 # missing JDK), returns its exit code otherwise.
 run_gjf()
 {
-  local list="$1" jar err rc
+  local list="$1" jar err rc major
   shift
+  major="$("$gjf_java_bin" -XshowSettings:properties -version 2>&1 \
+    | sed -n -E 's/^ *java\.specification\.version = ([0-9]+).*/\1/p')"
+  if [ "${major:-0}" -lt 21 ]
+  then
+    die "google-java-format $gjf_version needs Java 21 or later, $gjf_java_bin is Java ${major:-unknown}. Set SHAPE_GJF_JAVA_HOME to a Java 21 JDK"
+  fi
   jar="$(gjf_jar)" || exit 2
   err="$work/gjf-stderr.txt"
   # shellcheck disable=SC2086
-  xargs "$java_bin" $gjf_java_opts -jar "$jar" "$@" < "$list" 2> "$err"
+  xargs "$gjf_java_bin" $gjf_java_opts -jar "$jar" "$@" < "$list" 2> "$err"
   rc=$?
   if [ -s "$err" ]
   then

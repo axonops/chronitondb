@@ -74,7 +74,7 @@ Pins:
 
 - checkstyle 10.26.1, the version Apache's build declares in `.build/parent-pom-template.xml`.
 - PMD 7.29.0, `pmd-dist-7.29.0-bin.zip` from the PMD GitHub release, sha256 recorded in `pmd-ruleset.xml` after the release signature verified against the PMD release signing key.
-- google-java-format 1.35.0 all-deps jar from its GitHub release, sha256 recorded in `format-check.sh`, the last release that runs on Java 17 (the 5.0 line's JDK). The 6.0 line, on Java 21, can move to the current release.
+- google-java-format 1.37.0 all-deps jar from its GitHub release, sha256 recorded in `format-check.sh`, the same release on both lines. It needs a Java 21 JDK to run. On the 5.0 line, which builds on Java 17, set `SHAPE_GJF_JAVA_HOME` to a Java 21 JDK for `format-check.sh`.
 
 ## Tests
 

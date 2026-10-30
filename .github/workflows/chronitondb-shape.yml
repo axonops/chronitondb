@@ -36,16 +36,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: JDK 17
+      # Java 17 builds the 5.0 line. google-java-format needs Java 21 to run,
+      # so both are installed and 17, listed last, is the default.
+      - name: JDK 21 and 17
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: |
+            21
+            17
 
       - name: Resolve the build classpath (checkstyle)
         run: ant resolver-retrieve-build
 
       - name: Self-test the checks
+        env:
+          SHAPE_GJF_JAVA_HOME: ${{ env.JAVA_HOME_21_X64 }}
         run: |
           tools/chronitondb/shape-check.sh --self-test
           tools/chronitondb/format-check.sh --self-test
@@ -58,4 +64,5 @@ jobs:
       - name: Google Java Style on the changed org/chronitondb files
         env:
           BASE: ${{ github.base_ref }}
+          SHAPE_GJF_JAVA_HOME: ${{ env.JAVA_HOME_21_X64 }}
         run: tools/chronitondb/format-check.sh --base "origin/$BASE"
