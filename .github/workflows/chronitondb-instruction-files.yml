@@ -1,0 +1,52 @@
+# Copyright 2026 AxonOps Limited
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Fails when an agent instruction file is in the tree a pull request would
+# merge: AGENTS.md, CLAUDE.md, GEMINI.md, .mcp.json or a .claude/ directory,
+# at any depth. An Apache merge can bring them, and an agent working on the
+# line would read them as instructions (security design rev 2, F11, build
+# plan step 1.4, acceptance test AT-37). Advisory until the owner makes it
+# required. Every action is pinned to a commit.
+name: ChronitonDB instruction files
+
+on:
+  pull_request:
+    branches:
+      - 'chronitondb-*'
+
+permissions:
+  contents: read
+
+jobs:
+  instruction-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: No agent instruction files
+        run: |
+          found="$(git ls-files | grep -E '(^|/)(AGENTS\.md|CLAUDE\.md|GEMINI\.md|\.mcp\.json)$|(^|/)\.claude/' || true)"
+          if [ -n "$found" ]
+          then
+            printf '%s\n' "$found" | while IFS= read -r path
+            do
+              printf '::error file=%s::agent instruction file on a ChronitonDB line, remove it\n' "$path"
+            done
+            exit 1
+          fi
+          echo "no agent instruction files"
