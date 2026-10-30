@@ -808,6 +808,14 @@ class TestConnectionModes(unittest.TestCase):
             args = run_ci.parse_arguments()
         self.assertEqual(args.url, 'https://ci.example')
 
+    def test_repository_named_chronitondb_is_accepted(self):
+        args = self.parse('--repository', 'https://github.com/chronitonlabs/chronitondb.git', '--attach', '42')
+        self.assertEqual(args.repository, 'https://github.com/chronitonlabs/chronitondb.git')
+
+    def test_repository_with_another_name_is_refused(self):
+        with self.assertRaises(AssertionError):
+            self.parse('--repository', 'https://github.com/example/other', '--attach', '42')
+
     def test_credential_location_never_defaults_to_working_directory(self):
         for directory in ('', 'relative/directory'):
             with patch.dict(os.environ, {'XDG_CONFIG_HOME': directory}):
