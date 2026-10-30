@@ -357,8 +357,8 @@ def parse_arguments() -> argparse.Namespace:
         require_tracking_remote(args.branch)
 
     assert not args.repository or (args.repository.startswith("https://github.com/")
-                                   and args.repository.removesuffix(".git").endswith("cassandra")),\
-        f"Only github apache/cassandra (forked) repository supported, got: {args.repository}"
+                                   and args.repository.removesuffix(".git").endswith(("cassandra", "chronitondb"))),\
+        f"Only github apache/cassandra (forked) or chronitonlabs/chronitondb repository supported, got: {args.repository}"
     assert args.dtest_repository.startswith("https://github.com/") and args.dtest_repository.removesuffix(".git").endswith("cassandra-dtest"),\
         f"Only github apache/cassandra-dtest (forked) repository supported, got: {args.dtest_repository}"
     assert not (args.setup and args.only_setup), "Both --setup or --only-setup cannot be specified."
