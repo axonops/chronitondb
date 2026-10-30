@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2026 AxonOps Limited
+  SPDX-License-Identifier: Apache-2.0
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!--
+  PMD rules for ChronitonDB code under org/chronitondb. Owner decision M6:
+  PMD runs in CI and in the commit gate only, it is never shipped and never
+  added to lib/ or build.xml. shape-check.sh downloads the pinned release
+  into build/ on first use and refuses it unless the sha256 below matches.
+
+  shape-check.sh reads the settings in this block, one per line, key = value.
+  Keep the keys as they are. Changing a value here changes the check.
+
+  pmd.version = 7.29.0
+  pmd.url = https://github.com/pmd/pmd/releases/download/pmd_releases/7.29.0/pmd-dist-7.29.0-bin.zip
+  pmd.sha256 = d27177c185b837fa57f097e482d1253468aa035379c5eb2671fa0a279109b179
+  cpd.minimum-tokens = 50
+
+  Where the pin comes from: the sha256 was computed on 2026-10-30 from the
+  zip at pmd.url after its detached signature pmd-dist-7.29.0-bin.zip.asc
+  (same release page) verified against the PMD Release Signing Key,
+  signing subkey 1E04 6C19 ED28 73D8 C08A F7B8 A063 2691 B78E 3422, the key
+  PMD documents in docs/pages/pmd/userdocs/signed_releases.md. PMD publishes
+  no sha256 file of its own, so the signature is the chain of trust and the
+  sha256 pins what was verified.
+
+  Duplication (CPD) is a command line tool in PMD 7, not a rule, so its only
+  setting lives in this block: cpd.minimum-tokens, the smallest duplicated
+  block reported, about 50 tokens (M6). Production findings block, test
+  findings warn (M5), the script applies the severity.
+-->
+<ruleset name="ChronitonDB shape"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+  <description>
+    Cognitive complexity for ChronitonDB code. Production code blocks above 15,
+    tests and benchmarks warn above 15 (owner decisions M5 and M6).
+  </description>
+
+  <!-- M6: cognitive complexity 15. PMD reports a method at or above
+       reportLevel, so 16 reports everything above the limit of 15. -->
+  <rule ref="category/java/design.xml/CognitiveComplexity">
+    <properties>
+      <property name="reportLevel" value="16"/>
+    </properties>
+  </rule>
+
+</ruleset>

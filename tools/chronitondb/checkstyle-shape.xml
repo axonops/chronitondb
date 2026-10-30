@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2026 AxonOps Limited
+  SPDX-License-Identifier: Apache-2.0
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE module PUBLIC
+          "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+          "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+  Shape limits for ChronitonDB production code under org/chronitondb.
+  Owner decisions M2, M3 and M4 in the kit's DECISIONS.md. Every finding
+  here blocks the commit gate and the PR CI. The only way past a limit is
+  a waiver recorded in the design record, never a suppression comment, so
+  this file has no SuppressionFilter and no SuppressWarningsHolder.
+
+  Apache code is never checked with this file. Apache's own rules live in
+  .build/checkstyle.xml and stay untouched.
+
+  Changing a limit is a one line change to a max property below (M4).
+-->
+<module name="Checker">
+  <property name="severity" value="error"/>
+  <property name="fileExtensions" value="java"/>
+
+  <!-- M3: file length 1,000 lines -->
+  <module name="FileLength">
+    <property name="max" value="1000"/>
+  </module>
+
+  <module name="TreeWalker">
+
+    <!-- M3: cyclomatic complexity 10 per method, a switch counts once -->
+    <module name="CyclomaticComplexity">
+      <property name="max" value="10"/>
+      <property name="switchBlockAsSingleDecisionPoint" value="true"/>
+    </module>
+
+    <!-- M3: NPath 200 -->
+    <module name="NPathComplexity">
+      <property name="max" value="200"/>
+    </module>
+
+    <!-- M3: boolean expression complexity 3 -->
+    <module name="BooleanExpressionComplexity">
+      <property name="max" value="3"/>
+    </module>
+
+    <!-- M3: method length 80 lines, blank and comment lines included -->
+    <module name="MethodLength">
+      <property name="max" value="80"/>
+      <property name="countEmpty" value="true"/>
+    </module>
+
+    <!-- M3: parameters 7 -->
+    <module name="ParameterNumber">
+      <property name="max" value="7"/>
+      <property name="ignoreOverriddenMethods" value="false"/>
+    </module>
+
+    <!-- M3: nested if depth 3 -->
+    <module name="NestedIfDepth">
+      <property name="max" value="3"/>
+    </module>
+
+    <!-- M3: nested loop depth 2. Checkstyle measures for loops only, while
+         and do loops are not counted by any checkstyle module. -->
+    <module name="NestedForDepth">
+      <property name="max" value="2"/>
+    </module>
+
+    <!-- M3: class fan out 20 -->
+    <module name="ClassFanOutComplexity">
+      <property name="max" value="20"/>
+    </module>
+
+  </module>
+</module>

@@ -1,0 +1,85 @@
+<!--
+Copyright 2026 AxonOps Limited
+SPDX-License-Identifier: Apache-2.0
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+# ChronitonDB code checks
+
+Two checks for the Java files under `org/chronitondb` that a change adds or modifies. Apache code is never checked by either. Both run in the agent commit gate and in the CI workflow `.github/workflows/chronitondb-shape.yml` on every pull request into a `chronitondb-*` branch. Owner decisions M2 to M6 and G1 in the kit's DECISIONS.md.
+
+## Shape limits: `shape-check.sh`
+
+Measured limits on production code, every finding blocks:
+
+| Limit | Value | Tool |
+| --- | --- | --- |
+| Cyclomatic complexity per method (a `switch` counts once) | 10 | checkstyle CyclomaticComplexity |
+| NPath complexity per method | 200 | checkstyle NPathComplexity |
+| Boolean expression complexity | 3 operators | checkstyle BooleanExpressionComplexity |
+| Method length (blank and comment lines included) | 80 lines | checkstyle MethodLength |
+| Parameters per method | 7 | checkstyle ParameterNumber |
+| Nested `if` depth | 3 | checkstyle NestedIfDepth |
+| Nested loop depth (`for` loops, checkstyle has no module for `while`) | 2 | checkstyle NestedForDepth |
+| Class fan out | 20 classes | checkstyle ClassFanOutComplexity |
+| File length | 1,000 lines | checkstyle FileLength |
+| Cognitive complexity per method | 15 | PMD CognitiveComplexity |
+| Duplicated block | 50 tokens | PMD CPD |
+
+Tests and benchmarks (any path with a `test/` directory before `org/chronitondb`: `test/unit`, `test/distributed`, `test/microbench`, `test/burn`) are measured with looser limits and every finding is a warning, never a failure: cyclomatic complexity 5, method length 150, file length 1,000, cognitive complexity 15, duplication 50 tokens. Testing a database is complicated, long setup is not a finding.
+
+The rules live in `checkstyle-shape.xml` (production), `checkstyle-shape-tests.xml` (tests) and `pmd-ruleset.xml` (cognitive complexity, plus the CPD setting and the PMD pin). Changing a limit is a one line change there.
+
+Output, one line per finding, then a summary:
+
+    ERROR src/java/org/chronitondb/index/Foo.java:42:5 CyclomaticComplexity value=12 limit=10: Cyclomatic Complexity is 12 (max allowed is 10).
+    WARN test/unit/org/chronitondb/index/FooTest.java:88:5 MethodLength value=162 limit=150: Method verify length is 162 lines (max allowed is 150).
+    shape-check: 1 production finding(s) that block, 1 test warning(s), 1 production and 1 test file(s) checked
+
+Exit 0 when nothing blocks, 1 on a production finding, 2 when the check could not run.
+
+## Google Java Style: `format-check.sh`
+
+ChronitonDB code follows Google Java Style, enforced with google-java-format. Production and test files alike, every unformatted file blocks, formatting has no legitimate exceptions.
+
+    tools/chronitondb/format-check.sh src/java/org/chronitondb/index/Foo.java   report
+    tools/chronitondb/format-check.sh --fix src/java/org/chronitondb/index/Foo.java   format in place
+
+The `.editorconfig` at the repository root carries the matching editor settings (2 space indent, 100 columns) for `src/java/org/chronitondb/**` and `test/**/org/chronitondb/**` only. Other paths are not affected.
+
+Apache's own checkstyle (`.build/checkstyle.xml`) runs over the whole tree. On the 5.0 line none of its rules touches layout or import order (banned APIs, unused and redundant imports, illegal types), so Google style needs no suppression there. The 6.0 line enforces `ImportOrder` with Cassandra's groups and static imports at the bottom, which Google style contradicts (one ASCII sorted block, static imports first), so the 6.0 port needs one `ImportOrder` suppression for `org/chronitondb` in `.build/checkstyle_suppressions.xml`, with a comment naming decision G1.
+
+## Running
+
+    tools/chronitondb/shape-check.sh FILE...            these files
+    tools/chronitondb/shape-check.sh                    the staged files (what the commit gate does)
+    tools/chronitondb/shape-check.sh --base origin/chronitondb-5.0   the files changed since the merge base (what CI does)
+    tools/chronitondb/shape-check.sh --self-test        the fixtures under test/
+    tools/chronitondb/format-check.sh ...               same options, plus --fix
+
+Paths that are not `org/chronitondb/**/*.java` are ignored. Checkstyle comes from the build's own test classpath, `build/test/lib/jars`, so run `ant resolver-retrieve-build` (or any build) once. PMD and google-java-format are downloaded into `build/chronitondb-shape` on first use and refused unless their sha256 matches the pin. Nothing is added to `lib/` or `build.xml`, nothing is shipped, `build/` is not committed. `SHAPE_PMD_HOME` and `SHAPE_GJF_JAR` point at copies already on disk, for offline use.
+
+Pins:
+
+- checkstyle 10.26.1, the version Apache's build declares in `.build/parent-pom-template.xml`.
+- PMD 7.29.0, `pmd-dist-7.29.0-bin.zip` from the PMD GitHub release, sha256 recorded in `pmd-ruleset.xml` after the release signature verified against the PMD release signing key.
+- google-java-format 1.37.0 all-deps jar from its GitHub release, sha256 recorded in `format-check.sh`, the same release on both lines. It needs a Java 21 JDK to run. On the 5.0 line, which builds on Java 17, set `SHAPE_GJF_JAVA_HOME` to a Java 21 JDK for `format-check.sh`.
+
+## Tests
+
+`test/src` and `test/test` hold one fixture per limit that breaks it and a few that pass (a 15 case `switch` with cyclomatic complexity 2, a method at cognitive complexity 15 exactly, a 100 line test method). `test/expected.txt` lists the finding each fixture must produce. `test/format` holds one formatted and one unformatted class. `--self-test` stages them as `src/java` and `test/unit` files, runs the real tools and compares. The fixtures are skipped when given to the checks by their own path, so staging them never fails a commit. CI runs both self-tests before the checks.
+
+## Waivers
+
+A production limit can be exceeded only with a waiver the owner recorded in the design record of the change, naming the method, the rule and why the shape is right there. A suppression comment in the code is not a waiver and the rules files have no suppression filter. The maintainability review lens reads the check output next to the design record and treats a broken limit without a recorded waiver as a major finding.
