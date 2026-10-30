@@ -1,0 +1,47 @@
+# Copyright 2026 AxonOps Limited
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# What shape-check.sh --self-test expects from the fixtures, one line per
+# finding: staged path, severity, rule. A file that must produce nothing has
+# the word none in place of severity and rule. The staging tree puts
+# test/src under src/java and test/test under test/unit, as in the repository.
+
+# Production fixtures inside every limit
+src/java/org/chronitondb/shape/WithinLimits.java none
+src/java/org/chronitondb/shape/SwitchCountsOnce.java none
+src/java/org/chronitondb/shape/CognitiveAtLimit.java none
+
+# Production fixtures, one broken limit each, every finding blocks
+src/java/org/chronitondb/shape/CyclomaticTooHigh.java ERROR CyclomaticComplexity
+src/java/org/chronitondb/shape/NPathTooHigh.java ERROR NPathComplexity
+src/java/org/chronitondb/shape/BooleanTooComplex.java ERROR BooleanExpressionComplexity
+src/java/org/chronitondb/shape/MethodTooLong.java ERROR MethodLength
+src/java/org/chronitondb/shape/TooManyParameters.java ERROR ParameterNumber
+src/java/org/chronitondb/shape/NestedIfTooDeep.java ERROR NestedIfDepth
+src/java/org/chronitondb/shape/NestedLoopsTooDeep.java ERROR NestedForDepth
+src/java/org/chronitondb/shape/TooManyDependencies.java ERROR ClassFanOutComplexity
+src/java/org/chronitondb/shape/FileTooLong.java ERROR FileLength
+src/java/org/chronitondb/shape/CognitiveTooHigh.java ERROR CognitiveComplexity
+src/java/org/chronitondb/shape/DuplicateA.java ERROR CPD
+src/java/org/chronitondb/shape/DuplicateB.java ERROR CPD
+
+# Test fixtures, the test limits apply and every finding is a warning
+test/unit/org/chronitondb/shape/LongSetupTest.java none
+test/unit/org/chronitondb/shape/ComplexTest.java WARN CyclomaticComplexity
+test/unit/org/chronitondb/shape/TooLongTest.java WARN MethodLength
+test/unit/org/chronitondb/shape/CognitiveTest.java WARN CognitiveComplexity
+test/unit/org/chronitondb/shape/CognitiveTest.java WARN CyclomaticComplexity
+test/unit/org/chronitondb/shape/DuplicateATest.java WARN CPD
+test/unit/org/chronitondb/shape/DuplicateBTest.java WARN CPD
