@@ -1,0 +1,39 @@
+# Copyright 2026 AxonOps Limited
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# A character outside ASCII in Java code under org/chronitondb, outside a
+# string, text block, character literal or comment. Outside those, Java only
+# allows such a character in an identifier, where a Cyrillic "a" looks like a
+# Latin one and two names that read the same can be different (homoglyphs).
+# Strings and comments may carry any text, test data in other scripts is
+# normal for a search engine.
+rules:
+  - id: chronitondb-non-ascii-identifier
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - "**/org/chronitondb/**"
+    message: >-
+      Non-ASCII character in code, outside a string or a comment. Identifiers
+      in ChronitonDB code are ASCII only, so that names that look alike are
+      alike. Use an ASCII name, or a string with a \u escape for data.
+    patterns:
+      - pattern-regex: '[^\x00-\x7F]+'
+      - pattern-not-inside: '"..."'
+      - pattern-not-regex: '//[^\n]*'
+      - pattern-not-regex: '/\*(?s:.)*?\*/'
+      - pattern-not-regex: '"""(?s:.)*?"""'
+      - pattern-not-regex: '''(?:[^''\\\n]|\\.)+'''

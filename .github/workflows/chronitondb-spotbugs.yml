@@ -1,0 +1,57 @@
+# Copyright 2026 AxonOps Limited
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# SpotBugs with FindSecBugs on the compiled org/chronitondb classes (decision
+# E13, build plan step 1.4). Report only: findings are printed and never fail
+# the check, a missed planted bug in the self-test does. The jars are pinned
+# by sha256 in tools/chronitondb/spotbugs-check.sh. The build runs only when
+# the line has org/chronitondb sources. Every action is pinned to a commit.
+name: ChronitonDB SpotBugs
+
+on:
+  pull_request:
+    branches:
+      - 'chronitondb-*'
+
+permissions:
+  contents: read
+
+jobs:
+  spotbugs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          submodules: true
+
+      # Java 21 for the 6.0 line (decision J1).
+      - name: JDK 21
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Self-test SpotBugs and FindSecBugs
+        run: tools/chronitondb/spotbugs-check.sh --self-test
+
+      # On 6.0 this also builds the modules/accord submodule.
+      - name: Build
+        if: hashFiles('src/java/org/chronitondb/**') != ''
+        run: ant jar
+
+      - name: SpotBugs on the org/chronitondb classes (report only)
+        run: tools/chronitondb/spotbugs-check.sh

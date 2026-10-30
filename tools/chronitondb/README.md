@@ -83,3 +83,36 @@ Pins:
 ## Waivers
 
 A production limit can be exceeded only with a waiver the owner recorded in the design record of the change, naming the method, the rule and why the shape is right there. A suppression comment in the code is not a waiver and the rules files have no suppression filter. The maintainability review lens reads the check output next to the design record and treats a broken limit without a recorded waiver as a major finding.
+
+## Security checks
+
+Two more checks, advisory until the owner makes them required (decision E13). CI runs them on every pull request into a `chronitondb-*` branch, in `.github/workflows/chronitondb-semgrep.yml` and `chronitondb-spotbugs.yml`, each after its self-test.
+
+### Semgrep: `semgrep-check.sh`
+
+Semgrep CE from its container image, pinned by digest in the script, run with docker without network. The rules are in `semgrep/`, one file per topic:
+
+| File | Finds | Paths |
+| --- | --- | --- |
+| `banned-apis.yml` | the APIs `.build/checkstyle.xml` bans in main code | `src/java/org/chronitondb` |
+| `non-ascii-identifiers.yml` | a non-ASCII character outside strings and comments | any `org/chronitondb` path |
+| `process-exec.yml` | `Runtime.exec` and `ProcessBuilder` with a command that is not a string literal | every Java file |
+| `deserialization.yml` | `ObjectInputStream` | every Java file |
+| `bidi.yml` | Unicode bidirectional control characters | every file |
+
+    tools/chronitondb/semgrep-check.sh FILE...          these files
+    tools/chronitondb/semgrep-check.sh                  the staged files
+    tools/chronitondb/semgrep-check.sh --base origin/chronitondb-5.0   the files changed since the merge base, without the findings already there (what CI does)
+    tools/chronitondb/semgrep-check.sh --self-test      the fixtures under test/semgrep
+
+Semgrep runs with `--disable-nosem`, so a `nosemgrep` comment hides nothing, and a checkstyle `permit` comment does not hide a banned API from Semgrep. Needs docker and jq. `--self-test` runs `semgrep --test` on `test/semgrep` (each `ruleid` line must be reported, each `ok` line must not) and then checks the path scoping, which `--test` ignores. The bidi fixture is written at test time, so no committed file carries a bidi control character.
+
+### SpotBugs: `spotbugs-check.sh`
+
+SpotBugs 4.10.5 with the FindSecBugs 1.14.0 plugin on the compiled `org.chronitondb` classes, report only: findings are printed and never fail the check. Apache classes are read to resolve types and never analysed.
+
+    tools/chronitondb/spotbugs-check.sh                 the classes under build/classes/main (run ant jar first)
+    tools/chronitondb/spotbugs-check.sh CLASSES         the classes under another directory
+    tools/chronitondb/spotbugs-check.sh --self-test     compile test/spotbugs and expect COMMAND_INJECTION and OBJECT_DESERIALIZATION
+
+The jars come from Maven Central into `build/chronitondb-shape/spotbugs-4.10.5`, each refused unless its sha256 matches the pin in the script. The set is the `lib/` of the SpotBugs release, so `java -jar spotbugs.jar` finds them through its manifest.
