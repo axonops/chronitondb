@@ -74,7 +74,7 @@ Pins:
 
 - checkstyle 10.26.1, the version Apache's build declares in `.build/parent-maven-pom.xml` on the 6.0 line.
 - PMD 7.29.0, `pmd-dist-7.29.0-bin.zip` from the PMD GitHub release, sha256 recorded in `pmd-ruleset.xml` after the release signature verified against the PMD release signing key.
-- google-java-format 1.37.0 all-deps jar from its GitHub release, sha256 recorded in `format-check.sh`, equal to the digest GitHub publishes for the asset and to Maven Central's `.sha256`. It needs a Java 21 JDK, so run `format-check.sh` with `JAVA_HOME` at 21 even when the build uses 11 or 17 (`build.xml` supports 11, 17 and 21 on this line). The CI workflow runs on Temurin 21. The 5.0 line stays on 1.35.0, the last release that runs on Java 17.
+- google-java-format 1.37.0 all-deps jar from its GitHub release, sha256 recorded in `format-check.sh`, equal to the digest GitHub publishes for the asset and to Maven Central's `.sha256`. It needs a Java 21 JDK, so run `format-check.sh` with `JAVA_HOME` at 21, or `SHAPE_GJF_JAVA_HOME` pointing at a Java 21 JDK, even when the build uses 11 or 17 (`build.xml` supports 11, 17 and 21 on this line). The CI workflow runs on Temurin 21. The 5.0 line pins the same release.
 
 ## Tests
 
