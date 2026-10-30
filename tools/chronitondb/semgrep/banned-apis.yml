@@ -1,0 +1,197 @@
+# Copyright 2026 AxonOps Limited
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# The JDK and library APIs that .build/checkstyle.xml bans in main code, on
+# ChronitonDB production code under src/java/org/chronitondb. Checkstyle
+# honours its own "checkstyle: permit" and "suppress" comments, Semgrep runs
+# with --disable-nosem, so neither kind of comment hides a finding here. The
+# replacement in each message is the one the checkstyle module names.
+rules:
+  - id: chronitondb-banned-system-clock
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: >-
+      System.currentTimeMillis and System.nanoTime are banned. Use
+      org.apache.cassandra.utils.Clock.Global or the Clock interface.
+    pattern-either:
+      - pattern: System.currentTimeMillis()
+      - pattern: System.nanoTime()
+
+  - id: chronitondb-banned-instant-now
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: Instant.now is banned. Use FBUtilities.now().
+    pattern-either:
+      - pattern: Instant.now(...)
+      - pattern: java.time.Instant.now(...)
+
+  - id: chronitondb-banned-executors
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: >-
+      Executors factory methods are banned. Use
+      ExecutorFactory.Global.executorFactory().
+    pattern-either:
+      - pattern: Executors.newSingleThreadExecutor(...)
+      - pattern: Executors.newFixedThreadPool(...)
+      - pattern: Executors.newCachedThreadPool(...)
+      - pattern: Executors.newSingleThreadScheduledExecutor(...)
+      - pattern: Executors.newWorkStealingPool(...)
+      - pattern: Executors.newScheduledThreadPool(...)
+      - pattern: Executors.defaultThreadFactory(...)
+
+  - id: chronitondb-banned-direct-executor
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: MoreExecutors.directExecutor is banned. Use ImmediateExecutor.INSTANCE.
+    pattern: MoreExecutors.directExecutor()
+
+  - id: chronitondb-banned-import
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: >-
+      This import is banned by .build/checkstyle.xml. Use the in tree
+      replacement: org.apache.cassandra.io.util.File and PathUtils for files,
+      org.apache.cassandra.utils.concurrent for semaphores, latches, futures
+      and blocking queues, ExecutorFactory for executors.
+    pattern-either:
+      - pattern: import junit.framework.$X;
+      - pattern: import org.jboss.byteman.$X;
+      - pattern: import java.io.File;
+      - pattern: import java.io.FileInputStream;
+      - pattern: import java.io.FileOutputStream;
+      - pattern: import java.io.FileReader;
+      - pattern: import java.io.FileWriter;
+      - pattern: import java.io.RandomAccessFile;
+      - pattern: import java.nio.file.Paths;
+      - pattern: import java.util.concurrent.Semaphore;
+      - pattern: import java.util.concurrent.CountDownLatch;
+      - pattern: import java.util.concurrent.Executors;
+      - pattern: import java.util.concurrent.LinkedBlockingQueue;
+      - pattern: import java.util.concurrent.SynchronousQueue;
+      - pattern: import java.util.concurrent.ArrayBlockingQueue;
+      - pattern: import java.util.concurrent.CompletableFuture;
+      - pattern: import com.google.common.util.concurrent.Futures;
+      - pattern: import com.google.common.util.concurrent.AbstractFuture;
+      - pattern: import com.google.common.util.concurrent.ListenableFutureTask;
+      - pattern: import com.google.common.util.concurrent.ListenableFuture;
+      - pattern: import io.netty.util.concurrent.Future;
+      - pattern: import io.netty.util.concurrent.Promise;
+      - pattern: import io.netty.util.concurrent.AbstractFuture;
+
+  - id: chronitondb-banned-instantiation
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: >-
+      This instantiation is banned by .build/checkstyle.xml. Threads and pools
+      come from ExecutorFactory, files from org.apache.cassandra.io.util.File,
+      semaphores and latches from org.apache.cassandra.utils.concurrent, JSON
+      from JsonUtils.JSON_OBJECT_MAPPER, and OutOfMemoryError is never thrown.
+    pattern-either:
+      - pattern: new Thread(...)
+      - pattern: new ThreadPoolExecutor(...)
+      - pattern: new ScheduledThreadPoolExecutor(...)
+      - pattern: new ForkJoinPool(...)
+      - pattern: new FutureTask<$T>(...)
+      - pattern: new FutureTask(...)
+      - pattern: new java.util.concurrent.Semaphore(...)
+      - pattern: new java.util.concurrent.CountDownLatch(...)
+      - pattern: new ObjectMapper(...)
+      - pattern: new java.io.File(...)
+      - pattern: new OutOfMemoryError(...)
+
+  - id: chronitondb-banned-path-to-file
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: Path.toFile() is banned, some implementations do not support it. Stay on org.apache.cassandra.io.util.File.
+    pattern: $P.toFile()
+
+  - id: chronitondb-banned-boxing-constructor
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: Boxing constructors are banned. Use Integer.valueOf() and friends.
+    pattern-either:
+      - pattern: new Integer(...)
+      - pattern: new Long(...)
+      - pattern: new Float(...)
+      - pattern: new Byte(...)
+      - pattern: new Double(...)
+      - pattern: new Short(...)
+
+  - id: chronitondb-banned-system-property
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: >-
+      System properties and the environment are read through
+      CassandraRelevantProperties or CassandraRelevantEnv, never directly.
+    pattern-either:
+      - pattern: System.getenv(...)
+      - pattern: System.getProperty(...)
+      - pattern: System.setProperty(...)
+      - pattern: Integer.getInteger(...)
+      - pattern: Long.getLong(...)
+      - pattern: Boolean.getBoolean(...)
+
+  - id: chronitondb-banned-var
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: var is banned (checkstyle IllegalType). Name the type.
+    pattern-either:
+      - pattern: var $X = $E;
+      - pattern: 'for (var $X : $E) $BODY'
+
+  # 6.0 line only, as in its .build/checkstyle.xml (blockToCases).
+  - id: chronitondb-banned-case-conversion
+    languages: [java]
+    severity: ERROR
+    paths:
+      include:
+        - /src/java/org/chronitondb/
+    message: >-
+      toLowerCase and toUpperCase are banned. Use
+      LocalizeString.toLowerCaseLocalized or toUpperCaseLocalized.
+    pattern-either:
+      - pattern: $S.toLowerCase(...)
+      - pattern: $S.toUpperCase(...)

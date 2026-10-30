@@ -1,0 +1,29 @@
+# Copyright 2026 AxonOps Limited
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Unicode bidirectional control characters, in any file a pull request
+# changes. They reorder how text is displayed without changing what a
+# compiler or a shell reads, so a reviewer sees different code from the code
+# that runs (Trojan Source, CVE-2021-42574). The characters are written as
+# escapes, this file carries none of them.
+rules:
+  - id: chronitondb-bidi-control-character
+    languages: [regex]
+    severity: ERROR
+    message: >-
+      Unicode bidirectional control character (U+061C, U+200E, U+200F,
+      U+202A to U+202E or U+2066 to U+2069). It changes how the text is shown
+      without changing what runs. Remove it, or write it as an escape.
+    pattern-regex: '[\x{061C}\x{200E}\x{200F}\x{202A}-\x{202E}\x{2066}-\x{2069}]'

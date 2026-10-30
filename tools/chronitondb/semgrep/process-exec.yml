@@ -1,0 +1,52 @@
+# Copyright 2026 AxonOps Limited
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# A process started from a command that is not a string literal. The command
+# then comes from a variable, a field or a method result, so it can carry
+# input. Applies to every Java file a pull request changes, stock or not.
+rules:
+  - id: chronitondb-runtime-exec-on-input
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Runtime.exec with a command that is not a string literal. A command
+      built from input can run anything. Start no process from ChronitonDB
+      code, or take the command from a fixed literal.
+    patterns:
+      - pattern-either:
+          - pattern: Runtime.getRuntime().exec($CMD, ...)
+          - pattern: (Runtime $R).exec($CMD, ...)
+      - metavariable-pattern:
+          metavariable: $CMD
+          patterns:
+            - pattern: $X
+            - pattern-not: '"..."'
+
+  - id: chronitondb-process-builder-on-input
+    languages: [java]
+    severity: ERROR
+    message: >-
+      ProcessBuilder with an argument that is not a string literal. A command
+      built from input can run anything. Start no process from ChronitonDB
+      code, or take every argument from a fixed literal.
+    patterns:
+      - pattern-either:
+          - pattern: new ProcessBuilder(..., $ARG, ...)
+          - pattern: (ProcessBuilder $PB).command(..., $ARG, ...)
+      - metavariable-pattern:
+          metavariable: $ARG
+          patterns:
+            - pattern: $X
+            - pattern-not: '"..."'

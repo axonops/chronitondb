@@ -1,0 +1,35 @@
+# Copyright 2026 AxonOps Limited
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Java serialization. ObjectInputStream builds any serializable class named in
+# its input, which turns a crafted byte stream into code execution through a
+# gadget chain on the classpath. Applies to every Java file a pull request
+# changes, stock or not.
+rules:
+  - id: chronitondb-object-input-stream
+    languages: [java]
+    severity: ERROR
+    message: >-
+      ObjectInputStream deserializes whatever class its input names. Use the
+      in tree serializers (IVersionedSerializer, TypeSizes, DataInputPlus) or
+      a format with a fixed schema instead.
+    pattern-either:
+      - pattern: new ObjectInputStream(...)
+      - pattern: new java.io.ObjectInputStream(...)
+      - pattern: |
+          class $C extends ObjectInputStream { ... }
+      - pattern: |
+          class $C extends java.io.ObjectInputStream { ... }
+      - pattern: new ObjectInputStream(...) { ... }
