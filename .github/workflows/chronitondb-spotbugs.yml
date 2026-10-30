@@ -53,5 +53,7 @@ jobs:
         if: hashFiles('src/java/org/chronitondb/**') != ''
         run: ant jar
 
+      # Same condition as Build: with no org/chronitondb sources there is nothing to analyse and no build to read.
       - name: SpotBugs on the org/chronitondb classes (report only)
+        if: hashFiles('src/java/org/chronitondb/**') != ''
         run: tools/chronitondb/spotbugs-check.sh
