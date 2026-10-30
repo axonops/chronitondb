@@ -314,7 +314,7 @@ self_test()
   expected="$work/selftest-expected.txt"
   actual="$work/selftest-actual.txt"
 
-  find "$stage" -name '*.java' -type f | sort | xargs "$0" > "$out" 2>&1
+  find "$stage" -name '*.java' -type f | sort | run_on_list > "$out" 2>&1
   rc=$?
   cat "$out"
   if [ "$rc" -ne 1 ]
@@ -337,7 +337,7 @@ self_test()
     failed=$((failed + 1))
   fi
 
-  find "$stage/test" -name '*.java' -type f | sort | xargs "$0" > "$out" 2>&1
+  find "$stage/test" -name '*.java' -type f | sort | run_on_list > "$out" 2>&1
   rc=$?
   if [ "$rc" -ne 0 ] || grep -q '^ERROR ' "$out" || ! grep -q '^WARN ' "$out"
   then
@@ -346,7 +346,7 @@ self_test()
     failed=$((failed + 1))
   fi
 
-  grep ' none$' "$expected" | awk -v stage="$stage/" '/^src\// { print stage $1 }' | xargs "$0" > "$out" 2>&1
+  grep ' none$' "$expected" | awk -v stage="$stage/" '/^src\// { print stage $1 }' | run_on_list > "$out" 2>&1
   rc=$?
   if [ "$rc" -ne 0 ] || grep -q -E '^(ERROR|WARN) ' "$out"
   then
@@ -355,7 +355,7 @@ self_test()
     failed=$((failed + 1))
   fi
 
-  find "$fixtures/src" -name '*.java' -type f | sort | xargs "$0" > "$out" 2>&1
+  find "$fixtures/src" -name '*.java' -type f | sort | run_on_list > "$out" 2>&1
   rc=$?
   if [ "$rc" -ne 0 ] || grep -q -E '^(ERROR|WARN) ' "$out"
   then
