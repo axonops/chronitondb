@@ -39,6 +39,18 @@ note()
   printf '%s: %s\n' "$tool" "$*" >&2
 }
 
+# Runs this script once on the files listed on stdin, one per line, and returns
+# its exit code. GNU xargs would turn an exit code of 1 into 123.
+run_on_list()
+{
+  local path files=()
+  while IFS= read -r path
+  do
+    files+=("$path")
+  done
+  "$0" "$@" ${files[@]+"${files[@]}"}
+}
+
 # Path for output: relative to the repository when inside it.
 display()
 {

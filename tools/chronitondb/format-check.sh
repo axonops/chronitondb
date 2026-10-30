@@ -156,7 +156,7 @@ self_test()
   cp "$fixtures/format/Unformatted.java" "$stage/test/unit/org/chronitondb/shape/"
   out="$work/format-selftest-output.txt"
 
-  find "$stage" -name '*.java' -type f | sort | xargs "$0" > "$out" 2>&1
+  find "$stage" -name '*.java' -type f | sort | run_on_list > "$out" 2>&1
   rc=$?
   cat "$out"
   if [ "$rc" -ne 1 ]
@@ -174,13 +174,13 @@ self_test()
     printf 'self-test: FAIL the unformatted test fixture was not reported, formatting blocks tests too\n'
     failed=$((failed + 1))
   fi
-  if grep -q 'Formatted.java ' "$out" | grep -v Unformatted
+  if grep 'Formatted.java ' "$out" | grep -q -v Unformatted
   then
     printf 'self-test: FAIL the formatted fixture was reported\n'
     failed=$((failed + 1))
   fi
 
-  find "$stage" -name '*.java' -type f | sort | xargs "$0" --fix > "$out" 2>&1
+  find "$stage" -name '*.java' -type f | sort | run_on_list --fix > "$out" 2>&1
   rc=$?
   if [ "$rc" -ne 0 ]
   then
@@ -188,7 +188,7 @@ self_test()
     printf 'self-test: FAIL --fix exit %s, expected 0\n' "$rc"
     failed=$((failed + 1))
   fi
-  find "$stage" -name '*.java' -type f | sort | xargs "$0" > "$out" 2>&1
+  find "$stage" -name '*.java' -type f | sort | run_on_list > "$out" 2>&1
   rc=$?
   if [ "$rc" -ne 0 ] || grep -q '^ERROR ' "$out"
   then
@@ -197,7 +197,7 @@ self_test()
     failed=$((failed + 1))
   fi
 
-  find "$fixtures/format" -name '*.java' -type f | sort | xargs "$0" > "$out" 2>&1
+  find "$fixtures/format" -name '*.java' -type f | sort | run_on_list > "$out" 2>&1
   rc=$?
   if [ "$rc" -ne 0 ] || grep -q '^ERROR ' "$out"
   then
