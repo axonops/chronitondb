@@ -142,10 +142,10 @@ expect_out "run-tests.sh --target names the unknown target type" "Invalid test t
 
 # this script runs on the java on the path, so a legacy positional java version is a
 # mistake. reading it as a test name regexp would run the wrong tests on the wrong jdk
-run_case "${CASSANDRA_DIR}/.build/run-tests.sh" test 17
+run_case "${CASSANDRA_DIR}/.build/run-tests.sh" test 21
 expect_rc "run-tests.sh rejects a legacy positional java version" 1
 expect_out "run-tests.sh says it cannot set the java version" "cannot set the java version"
-expect_out "run-tests.sh names the docker script that can" "docker/run-tests.sh -a test -j 17"
+expect_out "run-tests.sh names the docker script that can" "docker/run-tests.sh -a test -j 21"
 
 ################################
 #
