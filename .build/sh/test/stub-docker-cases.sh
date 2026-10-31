@@ -97,12 +97,12 @@ expect_invocation "_docker_run.sh passes --clean to build-jars.sh" "build-jars.s
 
 # with a version, the run script must not receive it as one of its own arguments
 reset_stub
-run_case "${cassandra_dir}/.build/docker/_docker_run.sh" debian-build.docker build-jars.sh 17 --clean
+run_case "${cassandra_dir}/.build/docker/_docker_run.sh" debian-build.docker build-jars.sh 21 --clean
 expect_rc "_docker_run.sh runs with a java version" 0
 expect_no_out "_docker_run.sh does not default when a version is given" "Defaulting to java"
-expect_invocation "_docker_run.sh sets the given java version" "_set_java.sh 17"
+expect_invocation "_docker_run.sh sets the given java version" "_set_java.sh 21"
 expect_invocation "_docker_run.sh still passes --clean" "build-jars.sh --clean"
-expect_no_invocation "_docker_run.sh does not pass the version to the run script" "build-jars.sh 17"
+expect_no_invocation "_docker_run.sh does not pass the version to the run script" "build-jars.sh 21"
 
 # a leading - marks a run script argument, so -s must never be read as a java version
 reset_stub
@@ -124,9 +124,9 @@ expect_out "_docker_run.sh names the missing dockerfile" "no-such.docker must ex
 # docker accepts [a-zA-Z0-9][a-zA-Z0-9_.-] in a container name only. four call sites pass a
 # run_script that holds a directory, so the name must not carry the directory separator
 reset_stub
-run_case "${cassandra_dir}/.build/docker/_docker_run.sh" almalinux-build.docker docker/_build-redhat.sh 17
+run_case "${cassandra_dir}/.build/docker/_docker_run.sh" almalinux-build.docker docker/_build-redhat.sh 21
 expect_rc "_docker_run.sh runs a run_script under a directory" 0
-expect_invocation "_docker_run.sh names the container after the run_script alone" "\-\-name cassandra_almalinux-build_build-redhat_jdk17__"
+expect_invocation "_docker_run.sh names the container after the run_script alone" "\-\-name cassandra_almalinux-build_build-redhat_jdk21__"
 expect_no_invocation "_docker_run.sh puts no directory separator in the container name" "\-\-name [^ ]*/"
 
 # .build/docker/build-redhat.sh passes a quoted java version that can be empty, followed by
@@ -141,11 +141,11 @@ expect_invocation "_docker_run.sh passes the trailing positional on" "_build-red
 
 # the same call site with the version given
 reset_stub
-run_case "${cassandra_dir}/.build/docker/_docker_run.sh" almalinux-build.docker docker/_build-redhat.sh 17 rpm
+run_case "${cassandra_dir}/.build/docker/_docker_run.sh" almalinux-build.docker docker/_build-redhat.sh 21 rpm
 expect_rc "_docker_run.sh runs with a java version and a trailing positional" 0
-expect_invocation "_docker_run.sh sets the java version before the positional" "_set_java.sh 17"
+expect_invocation "_docker_run.sh sets the java version before the positional" "_set_java.sh 21"
 expect_invocation "_docker_run.sh passes only the positional to the run script" "_build-redhat.sh rpm"
-expect_no_invocation "_docker_run.sh does not pass the version with the positional" "_build-redhat.sh 17"
+expect_no_invocation "_docker_run.sh does not pass the version with the positional" "_build-redhat.sh 21"
 
 ################################
 #
@@ -159,20 +159,20 @@ expect_rc "docker/run-tests.sh -h exits 0" 0
 expect_out "docker/run-tests.sh -h documents --summary" "-s, --summary"
 
 reset_stub
-run_case "${cassandra_dir}/.build/docker/run-tests.sh" -a test -t StorageServiceServerTest -j 17 -s
+run_case "${cassandra_dir}/.build/docker/run-tests.sh" -a test -t StorageServiceServerTest -j 21 -s
 expect_rc "docker/run-tests.sh runs with short flags" 0
 # two assertions, as an empty split_chunk_arg leaves a double space between -a and -t
 expect_invocation "docker/run-tests.sh passes the target on" "_docker_init_tests.sh \-a test"
 expect_invocation "docker/run-tests.sh passes the test name and -s on" "\-t StorageServiceServerTest \-s"
-expect_invocation "docker/run-tests.sh sets java from -j" "_set_java.sh 17"
+expect_invocation "docker/run-tests.sh sets java from -j" "_set_java.sh 21"
 
 # the long flags must reach the container as the same short flags
 reset_stub
-run_case "${cassandra_dir}/.build/docker/run-tests.sh" --target test --test StorageServiceServerTest --java 17 --summary
+run_case "${cassandra_dir}/.build/docker/run-tests.sh" --target test --test StorageServiceServerTest --java 21 --summary
 expect_rc "docker/run-tests.sh runs with long flags" 0
 expect_invocation "docker/run-tests.sh turns --target into -a" "_docker_init_tests.sh \-a test"
 expect_invocation "docker/run-tests.sh turns --test and --summary into -t and -s" "\-t StorageServiceServerTest \-s"
-expect_invocation "docker/run-tests.sh sets java from --java" "_set_java.sh 17"
+expect_invocation "docker/run-tests.sh sets java from --java" "_set_java.sh 21"
 
 reset_stub
 run_case "${cassandra_dir}/.build/docker/run-tests.sh" --target bogus-target
@@ -228,10 +228,10 @@ expect_invocation "docker/run-tests.sh passes that argument downstream" "\-b cas
 
 # the legacy form is <target> [<test regexp|chunk>] [<java version>]
 reset_stub
-run_case "${cassandra_dir}/.build/docker/run-tests.sh" test StorageServiceServerTest 17
+run_case "${cassandra_dir}/.build/docker/run-tests.sh" test StorageServiceServerTest 21
 expect_rc "docker/run-tests.sh runs three legacy arguments" 0
-expect_out "docker/run-tests.sh shows the flags the legacy arguments became" "format: -a test -t StorageServiceServerTest -j 17"
-expect_invocation "docker/run-tests.sh sets java from the third legacy argument" "_set_java.sh 17"
+expect_out "docker/run-tests.sh shows the flags the legacy arguments became" "format: -a test -t StorageServiceServerTest -j 21"
+expect_invocation "docker/run-tests.sh sets java from the third legacy argument" "_set_java.sh 21"
 
 reset_stub
 run_case "${cassandra_dir}/.build/docker/run-tests.sh" test 1/8
@@ -240,10 +240,10 @@ expect_invocation "docker/run-tests.sh turns the legacy chunk into -c" "_docker_
 
 # with two legacy arguments the second reads as the java version, not as a test name regexp
 reset_stub
-run_case "${cassandra_dir}/.build/docker/run-tests.sh" test 17
+run_case "${cassandra_dir}/.build/docker/run-tests.sh" test 21
 expect_rc "docker/run-tests.sh runs two legacy arguments" 0
-expect_out "docker/run-tests.sh shows the second legacy argument as -j" "format: -a test  -j 17"
-expect_invocation "docker/run-tests.sh sets java from the second legacy argument" "_set_java.sh 17"
-expect_no_invocation "docker/run-tests.sh reads no test name regexp from it" "\-t 17"
+expect_out "docker/run-tests.sh shows the second legacy argument as -j" "format: -a test  -j 21"
+expect_invocation "docker/run-tests.sh sets java from the second legacy argument" "_set_java.sh 21"
+expect_no_invocation "docker/run-tests.sh reads no test name regexp from it" "\-t 21"
 
 report stub-docker
