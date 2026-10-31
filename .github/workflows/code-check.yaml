@@ -12,7 +12,7 @@ on:
             - 'chronitondb-*'
 
 jobs:
-    ant-check-jdk17:
+    ant-check:
         runs-on: ubuntu-latest
 
         steps:
